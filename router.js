@@ -34,38 +34,36 @@ function del(uri, funct) {
 function start(req, res) {
     var query = req.method+req.url;
 
-    if (this.router[query] === undefined) {
-
         for (var key in this.router) {
-            if (/:[A-Za-z0-9]*/.test(key)) {
-                var tmpvar = key.match(/:[A-Za-z0-9]*/g);
-                var result = key.replace( /:[A-Za-z0-9]*/g, '[A-Za-z0-9]*');
-                var tmpval = key.replace( /:[A-Za-z0-9]*/g, '([A-Za-z0-9]*)');
+        	if (key != query) {
+	            if (/:[A-Za-z0-9]*/.test(key)) {
+	                var tmpvar = key.match(/:[A-Za-z0-9]*/g);
+	                var result = key.replace( /:[A-Za-z0-9]*/g, '[A-Za-z0-9]*');
+	                var tmpval = key.replace( /:[A-Za-z0-9]*/g, '([A-Za-z0-9]*)');
 
-                var expr = new RegExp(result, 'g');
-                var valexpr = new RegExp(tmpval);
+	                var expr = new RegExp(result, 'g');
+	                var valexpr = new RegExp(tmpval);
 
-                var resul = expr.exec(query);
-                var valres = valexpr.exec(query);
+	                var resul = expr.exec(query);
+	                var valres = valexpr.exec(query);
 
-                if (resul == query) {
+	                if (resul == query) {
 
-                    req.params = {};
-                    for (var i=0; i<tmpvar.length; i++) {
-                        req.params[tmpvar[i].substring(1, tmpvar[i].length)] = valres[i+1];
-                    }
-                    this.router[key](req, res);
-                    return true;
-                }
-            }
+	                    req.params = {};
+	                    for (var i=0; i<tmpvar.length; i++) {
+	                        req.params[tmpvar[i].substring(1, tmpvar[i].length)] = valres[i+1];
+	                    }
+	                    this.router[key](req, res);
+	                    return true;
+	                }
+	            } else {
+	            	this.router[query](req, res);
+			        return true;
+	            }
+        	}
 
         }
         return false;
-    } else {
-        this.router[query](req, res);
-        return true;
-    }
-
 }
 
 module.exports = Router;
